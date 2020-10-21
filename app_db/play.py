@@ -104,9 +104,3 @@ def update(id):
         db.update({"id":id},{"$set":request.get_json()})
     return jsonify({'result': True})
 
-
-
-
-
-
-
