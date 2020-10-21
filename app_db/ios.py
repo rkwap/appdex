@@ -1,5 +1,4 @@
 from app_db import *
-from flask.views import MethodView
 ios = Blueprint('ios', __name__)
 MAX_RESULTS=5
 db=mongo.db.ios
@@ -20,9 +19,9 @@ def search(q):
                 {
                 "id":app["id"],
                 "title":app["title"],
-                "appURL":app["appURL"],
-                "publisher":app["publisher"],
-                "publisherURL":app["publisherURL"],
+                "url":app["url"],
+                "developer":app["developer"],
+                "developer_url":app["developer_url"],
                 "icon":app["icon"],
                 "price":app["price"],
                 "devices":app["devices"],
@@ -63,16 +62,19 @@ def insert(q):
         if iPad is False :
             device = "iPhone Only" 
         if iPhone is True and iPad is True :
-            device = "Both iPhone and iPad"       
+            device = "Both iPhone and iPad"  
+        price=app.get('formattedPrice','')
+        if price=="Free":
+            price="0"
         # end of checking devices 
         data={
             "id":t_appid,
             "title":str(app['trackName']),
-            "appURL":str(app['trackViewUrl']),
-            "publisher":str(app['artistName']),
-            "publisherURL":str(app['artistViewUrl']),
+            "url":str(app['trackViewUrl']),
+            "developer":str(app['artistName']),
+            "developer_url":str(app['artistViewUrl']),
             "icon":str(app['artworkUrl512'].replace('512x512','200x200')),
-            "price":app.get('formattedPrice',''),
+            "price":price,
             "devices":str(device),
         }
         apps=db.find_one({"id":t_appid})
@@ -115,21 +117,24 @@ def sync(id):
             if iPad is False :
                 device = "iPhone Only" 
             if iPhone is True and iPad is True :
-                device = "Both iPhone and iPad"       
+                device = "Both iPhone and iPad" 
+            price=app.get('formattedPrice','')
+            if price=="Free":
+                price="0"      
             # end of checking devices 
             data={
                 "id":t_appid,
                 "title":str(app['trackName']),
-                "appURL":str(app['trackViewUrl']),
-                "publisher":str(app['artistName']),
-                "publisherURL":str(app['artistViewUrl']),
+                "url":str(app['trackViewUrl']),
+                "developer":str(app['artistName']),
+                "developer_url":str(app['artistViewUrl']),
                 "icon":str(app['artworkUrl512'].replace('512x512','200x200')),
-                "price":app.get('formattedPrice',''),
+                "price":price,
                 "devices":str(device),
             }
             # Updating the app details to DB
             db.update({"id":id},{"$set":data})
-    return redirect(url_for("ios.search",q=id))
+    return jsonify({'result': True})
 
 # ** admin use only
 # Endpoint for deleting an app details

@@ -45,10 +45,12 @@ mongo = PyMongo(app)
 
 # Importing Blueprints
 from app_db.ios import ios
+from app_db.play import play
 # from app.views.scraping.flipkart import flipkart
 # from app.views.scraping.youtube import youtube
 
 # Registering Blueprints
 app.register_blueprint(ios,url_prefix='/api/ios')
+app.register_blueprint(play,url_prefix='/api/play')
 # app.register_blueprint(flipkart)
 # app.register_blueprint(youtube)
